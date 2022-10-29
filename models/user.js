@@ -1,5 +1,6 @@
 const {Schema, model, Types} =  require('mongoose');
 
+
 const FriendsSchema = new Schema(
     {
         // set custom id to avoid confusion with parent comment _id
@@ -10,7 +11,6 @@ const FriendsSchema = new Schema(
         username:{
             type: String,
         },
-        reactions: [ReactionSchema]
     },
     {
         toJSON: {
@@ -20,6 +20,10 @@ const FriendsSchema = new Schema(
         id: false
       });
 
+      var validateEmail= (email) =>{
+        var re = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+        return re.test(email);
+      }
 const UserSchema = new Schema(
     {
         // set custom id to avoid confusion with parent comment _id
@@ -35,9 +39,10 @@ const UserSchema = new Schema(
             trim: true,
             lowercase: true,
             require: true,
+            validate: [
+              validateEmail, "Please enter an email"
+            ]
         },
-        
-        Thoughts:[ThoughtsSchema],
 
         friends: [FriendsSchema],
 },
@@ -55,6 +60,5 @@ const UserSchema = new Schema(
 
   // create the model using the Schema
 const User = model('User', UserSchema);
-
 // export the  model
 module.exports = User;
