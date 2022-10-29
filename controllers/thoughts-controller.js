@@ -3,13 +3,19 @@ const { Thoughts } = require('../models');
 const thoughtsController = {
     getAllThoughts(req, res) {
         Thoughts.find({})
-          .then(dbThoughtsData => res.json(dbThoughtsData))
+        .populate({
+          path: 'reactions',
+          select: '-__v'
+        })
+        .select('-__v')
+        .sort({ _id: -1 })
+          .then(dbThoughtsData =>  res.json(dbThoughtsData))
           .catch(err => {
             console.log(err);
             res.status(400).json(err);
           });
       },
-    
+
       // get one Thoughts by id GET
       getThoughtsById({ params }, res) {
         Thoughts.findOne({ _id: params.id })
@@ -55,7 +61,7 @@ const thoughtsController = {
                   res.status(404).json({ message: 'No thoughts found with this id!' });
                   return;
                   }
-                  res.json(dbThoughtsData);
+                  res.json(dbThoughtsData); //or `true` bc theres no doc remainig
               })
               .catch(err => res.status(400).json(err));
           }
